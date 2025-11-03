@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff, LockOutlined } from "@mui/icons-material";
 import { useAuth } from '../context/AuthContext';
+import { motion } from "framer-motion";
 
 const Login = () => {
     const [email, setEmail] = useState("");
