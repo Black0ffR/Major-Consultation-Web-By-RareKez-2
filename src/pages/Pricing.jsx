@@ -30,7 +30,6 @@ const PricingCard = ({ title, price, features, isRecommended = false }) => (
     </Button>
   </Paper>
 );
-
 const Pricing = () => (
   <Paper sx={{ p: { xs: 2, md: 4 } }}>
     <Typography variant="h1" gutterBottom data-testid="pricing-title">
@@ -94,5 +93,4 @@ const Pricing = () => (
     </Button>
   </Paper>
 );
-
 export default Pricing;

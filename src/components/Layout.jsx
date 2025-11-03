@@ -2,12 +2,10 @@ import React from 'react';
 import { Box, Container, Typography, Snackbar, Alert } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
-import professionalTheme from '../theme/professionalTheme';
 
-const Layout = ({ children, showSnackbar, handleCloseSnackbar, snackbar }) => {
+const Layout = ({ children, handleCloseSnackbar, snackbar }) => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-
   return (
     <Box
       sx={{
@@ -58,5 +56,4 @@ const Layout = ({ children, showSnackbar, handleCloseSnackbar, snackbar }) => {
     </Box>
   );
 };
-
 export default Layout;

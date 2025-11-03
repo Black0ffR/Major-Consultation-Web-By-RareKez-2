@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -22,36 +22,48 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LogoutIcon from '@mui/icons-material/Logout';
+import GroupIcon from '@mui/icons-material/Group';
 import professionalTheme from '../theme/professionalTheme';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const open = Boolean(anchorEl);
+  const userMenuOpen = Boolean(userMenuAnchor);
   const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 0 });
   const isMobile = useMediaQuery(professionalTheme.breakpoints.down('md'));
-
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const handleUserMenuClick = (event) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
+  };
   const handleDrawerToggle = () => {
     setMobileOpen((prevOpen) => !prevOpen);
   };
-
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+    handleUserMenuClose();
+  };
   const drawerWidth = 280;
-
   const desktopButtonSx = {
     minWidth: '100px',
     padding: { xs: '8px 16px', md: '10px 20px' },
     fontSize: { md: '0.875rem' },
     transition: 'all 0.2s ease',
   };
-
   const MobileMenu = () => (
     <Box
       role="navigation"
@@ -104,6 +116,20 @@ const Header = () => {
             <ListItemText primary="Insights" primaryTypographyProps={{ color: '#FFFFFF' }} />
           </ListItemButton>
         </ListItem>
+        {isAuthenticated && (
+          <>
+            <ListItem role="listitem" disablePadding key="users">
+              <ListItemButton
+                component={RouterLink}
+                to="/users"
+                sx={{ color: '#FFFFFF', '&:hover': { backgroundColor: '#4B5563' } }}
+              >
+                <GroupIcon sx={{ mr: 1, fontSize: 20 }} />
+                <ListItemText primary="Users" primaryTypographyProps={{ color: '#FFFFFF' }} />
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
         <ListItem role="listitem" disablePadding key="services-header" aria-expanded="false">
           <ListItemButton disabled sx={{ color: '#FFFFFF', opacity: 0.8 }}>
             <ListItemText primary="Services" primaryTypographyProps={{ color: '#FFFFFF' }} />
@@ -145,21 +171,42 @@ const Header = () => {
             <ListItemText primary="About" primaryTypographyProps={{ color: '#FFFFFF' }} />
           </ListItemButton>
         </ListItem>
-        <ListItem role="listitem" disablePadding key="contact">
-          <ListItemButton
-            component={RouterLink}
-            to="/contact"
-            sx={{ color: '#FFFFFF', '&:hover': { backgroundColor: '#4B5563' } }}
-          >
-            <ListItemText primary="Contact" primaryTypographyProps={{ color: '#FFFFFF' }} />
-          </ListItemButton>
-        </ListItem>
+        {!isAuthenticated ? (
+          <>
+            <ListItem role="listitem" disablePadding key="signup">
+              <ListItemButton
+                component={RouterLink}
+                to="/signup"
+                sx={{ color: '#FFFFFF', '&:hover': { backgroundColor: '#4B5563' } }}
+              >
+                <ListItemText primary="Sign-up" primaryTypographyProps={{ color: '#FFFFFF' }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem role="listitem" disablePadding key="login">
+              <ListItemButton
+                component={RouterLink}
+                to="/login"
+                sx={{ color: '#FFFFFF', '&:hover': { backgroundColor: '#4B5563' } }}
+              >
+                <ListItemText primary="Login" primaryTypographyProps={{ color: '#FFFFFF' }} />
+              </ListItemButton>
+            </ListItem>
+          </>
+        ) : (
+          <ListItem role="listitem" disablePadding key="logout">
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{ color: '#FFFFFF', '&:hover': { backgroundColor: '#4B5563' } }}
+            >
+              <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
+              <ListItemText primary="Logout" primaryTypographyProps={{ color: '#FFFFFF' }} />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
-
   const drawer = <MobileMenu />;
-
   return (
     <AppBar
       position="sticky"
@@ -219,7 +266,6 @@ const Header = () => {
               RareKez Consultation Hub
             </Typography>
           </Box>
-
           <IconButton
             aria-label="open drawer"
             onClick={handleDrawerToggle}
@@ -235,7 +281,6 @@ const Header = () => {
           >
             <MenuIcon />
           </IconButton>
-
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button
@@ -250,18 +295,21 @@ const Header = () => {
               >
                 Home
               </Button>
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/insights"
-                sx={{
-                  ...desktopButtonSx,
-                  color: '#FFFFFF',
-                  '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
-                }}
-              >
-                Insights
-              </Button>
+              {isAuthenticated && (
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/users"
+                  sx={{
+                    ...desktopButtonSx,
+                    color: '#FFFFFF',
+                    '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
+                  }}
+                >
+                  <GroupIcon sx={{ mr: 0.5, fontSize: 18 }} />
+                  Users
+                </Button>
+              )}
               <Button
                 id="services-button"
                 aria-controls={open ? 'services-menu' : undefined}
@@ -283,7 +331,6 @@ const Header = () => {
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                
                 PopperProps={{
                   modifiers: [
                     { name: 'offset', options: { offset: [0, 0] } },
@@ -344,36 +391,112 @@ const Header = () => {
                 >
                   Pricing Guide
                 </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  component={RouterLink}
+                  to="/insights"
+                  sx={{
+                    color: '#FFFFFF',
+                    '&:hover': { backgroundColor: '#4B5563', color: '#FFFFFF' },
+                  }}
+                >
+                  Insights
+                </MenuItem>
+                <MenuItem
+                  onClick={handleClose}
+                  component={RouterLink}
+                  to="/about"
+                  sx={{
+                    color: '#FFFFFF',
+                    '&:hover': { backgroundColor: '#4B5563', color: '#FFFFFF' },
+                  }}
+                >
+                  About
+                </MenuItem>
               </Menu>
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/about"
-                sx={{
-                  ...desktopButtonSx,
-                  color: '#FFFFFF',
-                  '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
+              {isAuthenticated ? (
+                <Button
+                  color="inherit"
+                  onClick={handleUserMenuClick}
+                  sx={{
+                    ...desktopButtonSx,
+                    color: '#FFFFFF',
+                    '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
+                  }}
+                >
+                  Farewell
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    color="inherit"
+                    component={RouterLink}
+                    to="/signup"
+                    sx={{
+                      ...desktopButtonSx,
+                      color: '#FFFFFF',
+                      '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
+                    }}
+                  >
+                    Sign-Up
+                  </Button>
+                  <Button
+                    color="inherit"
+                    component={RouterLink}
+                    to="/login"
+                    sx={{
+                      ...desktopButtonSx,
+                      color: '#FFFFFF',
+                      '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
+                    }}
+                  >
+                    Login
+                  </Button>
+                </>
+              )}
+              {}
+              <Menu
+                id="user-menu"
+                anchorEl={userMenuAnchor}
+                open={userMenuOpen}
+                onClose={handleUserMenuClose}
+                MenuListProps={{ 'aria-labelledby': 'user-menu' }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                PaperProps={{
+                  sx: {
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#FFFFFF',
+                    minWidth: 150,
+                    zIndex: 1400,
+                  },
                 }}
               >
-                About
-              </Button>
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/contact"
-                sx={{
-                  ...desktopButtonSx,
-                  color: '#FFFFFF',
-                  '&:hover': { color: '#F9FAFB', backgroundColor: 'transparent' },
-                }}
-              >
-                Contact
-              </Button>
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{
+                    color: '#FFFFFF',
+                    '&:hover': { backgroundColor: '#4B5563', color: '#FFFFFF' },
+                  }}
+                >
+                  <LogoutIcon sx={{ mr: 1, fontSize: 18 }} />
+                  Logout
+                </MenuItem>
+              </Menu>
             </Box>
           )}
         </Toolbar>
       </Container>
-
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -400,5 +523,4 @@ const Header = () => {
     </AppBar>
   );
 };
-
 export default Header;

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -43,13 +45,13 @@ const InsightsList = () => {
           sx={{ 
             mb: 4, 
             fontSize: { xs: '2rem', md: '3rem' },
-            color: 'text.secondary',
+            color: 'background.paper',
           }}
           data-testid="insights-title"
         >
           Latest Strategic Insights
         </Typography>
-        <Typography align="center" color="text.secondary" sx={{ mb: 6 }}>
+        <Typography align="center" color="background.paper" sx={{ mb: 6 }}>
           Curated articles and findings from the RareKez team.
         </Typography>
       </Grid>
