@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -14,31 +14,63 @@ import axios from "axios";
 const UpdateUser = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [address, setAddress] = useState("")
-  const [loading, setLoading] = useState(false)
-  // eslint-disable-next-line no-unused-vars
-  const [error, setError] = useState(false)
-  const payload = { firstName, lastName, email, address, phoneNumber }
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);  // Changed to null; now used in JSX
+  const [success, setSuccess] = useState(null);  // New: For success messages
+
+  const payload = { firstName, lastName, email, address, phoneNumber };
+
+  // Fetch existing user data to pre-populate form
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!id) {
+        setError("No user ID provided");
+        return;
+      }
+      try {
+        const res = await axios.get(`https://students-learning-api.onrender.com/api/auth/${id}`);
+        const userData = res.data;
+        setFirstName(userData.firstName || "");
+        setLastName(userData.lastName || "");
+        setEmail(userData.email || "");
+        setPhoneNumber(userData.phoneNumber || "");
+        setAddress(userData.address || "");  // Assuming API has address field
+        setError(null);  // Clear any errors
+      } catch (err) {
+        console.error(err);
+        setError(err.response?.data?.message || err.message || "Failed to load user data");
+      }
+    };
+    fetchUser();
+  }, [id]);
+
   const handleUpdate = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);  // Clear previous errors
+    setSuccess(null);  // Clear previous success
     try {
-      const res = await
-        axios.put(`https://students-learning-api.onrender.com/api/auth/update/${id}`, payload);
+      const res = await axios.put(
+        `https://students-learning-api.onrender.com/api/auth/update/${id}`,
+        payload
+      );
       console.log(res.data);
-      setLoading(false)
-      navigate('/users')
-      //setTimeout(()=> navigate(-1),1500) 
-    } catch (error) {
-      console.error(error)
-      setError(error)
-      setLoading(false)
+      setSuccess("User updated successfully!");  // Show success
+      setLoading(false);
+      // Delay navigation to show success message
+      setTimeout(() => navigate('/users'), 1500);  // Or uncomment your original: navigate(-1)
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || "Failed to update user");
+      setLoading(false);
     }
-  }
+  };
+
   return (
     <Box
       sx={{
@@ -63,9 +95,19 @@ const UpdateUser = () => {
         <Typography variant="h5" gutterBottom fontWeight="bold">
           Update User
         </Typography>
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Message goes here
-        </Alert>
+
+        {/* Dynamic Alert for Error or Success */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
+
         <form onSubmit={handleUpdate}>
           <TextField
             label="First Name"
@@ -74,6 +116,7 @@ const UpdateUser = () => {
             onChange={(e) => setFirstName(e.target.value)}
             fullWidth
             margin="normal"
+            required
           />
           <TextField
             label="Last Name"
@@ -82,23 +125,28 @@ const UpdateUser = () => {
             onChange={(e) => setLastName(e.target.value)}
             fullWidth
             margin="normal"
+            required
           />
-          <TextField label="Email"
+          <TextField
+            label="Email"
             name="email"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             fullWidth
-            margin="normal" />
+            margin="normal"
+            required
+          />
           <TextField
-            label="address"
+            label="Address"
             name="address"
-            fullWidth
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            fullWidth
             margin="normal"
           />
           <TextField
-            label="phoneNumber"
+            label="Phone Number"
             name="phoneNumber"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
@@ -113,11 +161,15 @@ const UpdateUser = () => {
             sx={{ mt: 2 }}
             disabled={loading}
           >
-            {loading ? <CircularProgress /> : " Update"}
+            {loading ? <CircularProgress size={24} /> : "Update"}
           </Button>
-          <Button variant="outlined"
-            fullWidth sx={{ mt: 1 }}
-            onClick={() => navigate(-1)}>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ mt: 1 }}
+            onClick={() => navigate(-1)}
+            disabled={loading}
+          >
             Cancel
           </Button>
         </form>
@@ -125,4 +177,5 @@ const UpdateUser = () => {
     </Box>
   );
 };
+
 export default UpdateUser;
