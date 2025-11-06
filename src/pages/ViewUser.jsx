@@ -1,40 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Paper, Typography, Button, CircularProgress, Alert } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios"
-import { useEffect, useState } from "react";
+import axios from "axios";
 
 const UserDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams()
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  // eslint-disable-next-line no-unused-vars
-  let [error, setError] = useState('');
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');  // Removed 'let' and ESLint disable—now it's used below
+
   useEffect(() => {
     let fetchUser = async () => {
       if (!id) {
-        setError('user not found')
-        setLoading(false)
-        return
+        setError('User not found');  // Capitalized for consistency
+        setLoading(false);
+        return;
       }
       try {
-        const res = await
-          axios.get(`https://students-learning-api.onrender.com/api/auth/${id}`)
-        setUser(res.data)
-        console.log(res.data)
+        const res = await axios.get(`https://students-learning-api.onrender.com/api/auth/${id}`);
+        setUser(res.data);
+        console.log(res.data);
+        setError('');  // Clear any previous error on success
       } catch (err) {
-        console.error(err)
-        setError(err)
+        console.error(err);
+        setError(err.response?.data?.message || err.message || 'Failed to fetch user details');  // More specific error handling
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchUser()
-  }, [id])
-  if (loading) return <CircularProgress />
-  //if(error) return<Alert severity ="error">error</Alert>
-  if (!user) return <Typography>user not found</Typography>
+    };
+    fetchUser();
+  }, [id]);
+
+  if (loading) return <CircularProgress />;
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ m: 2 }}>
+        {error}
+      </Alert>
+    );  // Now uses the error state!
+  }
+
+  if (!user) return <Typography>User not found</Typography>;
+
   return (
     <Box
       sx={{
@@ -63,7 +72,7 @@ const UserDetails = () => {
           <b>ID:</b> {user._id}
         </Typography>
         <Typography sx={{ mb: 1 }}>
-          <b>Name: {user.firstName} {user.lastName}</b>
+          <b>Name:</b> {user.firstName} {user.lastName}
         </Typography>
         <Typography sx={{ mb: 1 }}>
           <b>Email:</b> {user.email}
@@ -78,4 +87,5 @@ const UserDetails = () => {
     </Box>
   );
 };
+
 export default UserDetails;
