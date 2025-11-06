@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     TextField,
@@ -10,8 +10,9 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { PersonAddOutlined } from "@mui/icons-material";
-import { useAuth } from '../context/AuthContext';
-//import { motion } from "framer-motion";
+import { useAuth } from '../context/useAuth';
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion"; 
 
 const RegistrationScreen = () => {
     const [formData, setFormData] = useState({
@@ -28,19 +29,24 @@ const RegistrationScreen = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
     useEffect(() => {
         if (location.state?.email) {
             setFormData(prev => ({ ...prev, email: location.state.email }));
         }
     }, [location.state]);
-    const isFormValid = formData.firstName && formData.lastName && formData.email && formData.password;
-    const handleChange = (e) => {
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
+        if (error) setError(null);
     };
+
+    const isFormValid = formData.firstName.trim() && formData.lastName.trim() && 
+                       formData.email.trim() && formData.password.trim();
+
     const handleRegistration = useCallback(async (event) => {
         event.preventDefault();
         if (!isFormValid) {
@@ -65,11 +71,12 @@ const RegistrationScreen = () => {
                 setError(result.error || "Registration failed. Please try again.");
             }
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "An unexpected error occurred.");
         } finally {
             setLoading(false);
         }
-    }, [formData, isFormValid, register, navigate]);
+    }, [formData, register, navigate, isFormValid]); 
+
     if (success) {
         return (
             <Box
@@ -92,13 +99,13 @@ const RegistrationScreen = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: "rgba(0, 0, 0, 0.3)",
+                        backgroundColor: "rgba(0, 0, 0, 0.3)", 
                         backdropFilter: "blur(2px)",
                         zIndex: 1,
                     },
                 }}
             >
-                <motion.div
+                <motion.div  
                     initial={{ opacity: 0, y: 30, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
@@ -132,12 +139,13 @@ const RegistrationScreen = () => {
                         <Typography variant="body1" sx={{ mb: 3, color: '#6B7280' }}>
                             Your account has been created successfully. Redirecting to login page...
                         </Typography>
-                        <CircularProgress sx={{ color: '#6B7280' }} />
+                        <CircularProgress sx={{ color: '#6B7280', mx: 'auto' }} />
                     </Paper>
                 </motion.div>
             </Box>
         );
     }
+
     return (
         <Box
             sx={{
@@ -146,11 +154,26 @@ const RegistrationScreen = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: 'transparent',
+                backgroundImage: 'url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80)',
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                backgroundAttachment: "fixed",
+                position: "relative",
                 p: 2,
+                '&::before': {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    backdropFilter: "blur(2px)",
+                    zIndex: 1,
+                },
             }}
         >
-            <motion.div
+            <motion.div 
                 initial={{ opacity: 0, y: 30, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
@@ -178,7 +201,6 @@ const RegistrationScreen = () => {
                         justifyContent: "center",
                     }}
                 >
-                    {}
                     <Box
                         sx={{
                             width: 80,
@@ -195,7 +217,6 @@ const RegistrationScreen = () => {
                     >
                         <PersonAddOutlined sx={{ fontSize: 40, color: "#fff" }} />
                     </Box>
-                    {}
                     <Typography
                         variant="h5"
                         fontWeight="bold"
@@ -203,7 +224,6 @@ const RegistrationScreen = () => {
                     >
                         Create Your Account
                     </Typography>
-                    {}
                     {error && (
                         <Alert severity="error" sx={{ mb: 2, borderRadius: "12px" }}>
                             {error}
@@ -215,7 +235,7 @@ const RegistrationScreen = () => {
                             label="First Name"
                             name="firstName"
                             value={formData.firstName}
-                            onChange={handleChange}
+                            onChange={handleInputChange}  
                             sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             required
                             disabled={loading}
@@ -225,7 +245,7 @@ const RegistrationScreen = () => {
                             label="Last Name"
                             name="lastName"
                             value={formData.lastName}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             required
                             disabled={loading}
@@ -236,7 +256,7 @@ const RegistrationScreen = () => {
                             name="email"
                             type="email"
                             value={formData.email}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             required
                             disabled={loading}
@@ -247,18 +267,17 @@ const RegistrationScreen = () => {
                             name="password"
                             type="password"
                             value={formData.password}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             required
                             disabled={loading}
                         />
-                        {}
                         <TextField
                             fullWidth
                             label="Phone Number (Optional)"
                             name="phoneNumber"
                             value={formData.phoneNumber}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             disabled={loading}
                         />
@@ -267,7 +286,7 @@ const RegistrationScreen = () => {
                             label="Address (Optional)"
                             name="address"
                             value={formData.address}
-                            onChange={handleChange}
+                            onChange={handleInputChange}
                             sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
                             disabled={loading}
                         />
@@ -297,11 +316,10 @@ const RegistrationScreen = () => {
                             )}
                         </Button>
                     </Box>
-                    {}
                     <Typography variant="body2" sx={{ mt: 3, color: "text.secondary", textAlign: "center" }}>
                         Already have an account?{" "}
-                        <a
-                            href="/login"
+                        <RouterLink
+                            to="/login"
                             style={{
                                 color: "rgba(8, 20, 120, 1)",
                                 fontWeight: 600,
@@ -309,11 +327,12 @@ const RegistrationScreen = () => {
                             }}
                         >
                             Login
-                        </a>
+                        </RouterLink>
                     </Typography>
                 </Paper>
             </motion.div>
         </Box>
     );
 };
+
 export default RegistrationScreen;

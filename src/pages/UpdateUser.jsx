@@ -20,12 +20,10 @@ const UpdateUser = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);  // Changed to null; now used in JSX
-  const [success, setSuccess] = useState(null);  // New: For success messages
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const payload = { firstName, lastName, email, address, phoneNumber };
-
-  // Fetch existing user data to pre-populate form
   useEffect(() => {
     const fetchUser = async () => {
       if (!id) {
@@ -39,8 +37,8 @@ const UpdateUser = () => {
         setLastName(userData.lastName || "");
         setEmail(userData.email || "");
         setPhoneNumber(userData.phoneNumber || "");
-        setAddress(userData.address || "");  // Assuming API has address field
-        setError(null);  // Clear any errors
+        setAddress(userData.address || "");
+        setError(null);
       } catch (err) {
         console.error(err);
         setError(err.response?.data?.message || err.message || "Failed to load user data");
@@ -52,18 +50,17 @@ const UpdateUser = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);  // Clear previous errors
-    setSuccess(null);  // Clear previous success
+    setError(null);
+    setSuccess(null);
     try {
       const res = await axios.put(
         `https://students-learning-api.onrender.com/api/auth/update/${id}`,
         payload
       );
       console.log(res.data);
-      setSuccess("User updated successfully!");  // Show success
+      setSuccess("User updated successfully!");
       setLoading(false);
-      // Delay navigation to show success message
-      setTimeout(() => navigate('/users'), 1500);  // Or uncomment your original: navigate(-1)
+      setTimeout(() => navigate('/users'), 1500);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || "Failed to update user");
@@ -96,7 +93,7 @@ const UpdateUser = () => {
           Update User
         </Typography>
 
-        {/* Dynamic Alert for Error or Success */}
+        {}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}

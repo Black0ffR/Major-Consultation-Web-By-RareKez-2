@@ -25,7 +25,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import GroupIcon from '@mui/icons-material/Group';
 import professionalTheme from '../theme/professionalTheme';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth'; 
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -35,8 +35,9 @@ const Header = () => {
   const userMenuOpen = Boolean(userMenuAnchor);
   const trigger = useScrollTrigger({ disableHysteresis: true, threshold: 0 });
   const isMobile = useMediaQuery(professionalTheme.breakpoints.down('md'));
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth(); 
   const navigate = useNavigate();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -57,6 +58,7 @@ const Header = () => {
     navigate('/login', { replace: true });
     handleUserMenuClose();
   };
+
   const drawerWidth = 280;
   const desktopButtonSx = {
     minWidth: '100px',
@@ -64,6 +66,7 @@ const Header = () => {
     fontSize: { md: '0.875rem' },
     transition: 'all 0.2s ease',
   };
+
   const MobileMenu = () => (
     <Box
       role="navigation"
@@ -206,7 +209,9 @@ const Header = () => {
       </List>
     </Box>
   );
+
   const drawer = <MobileMenu />;
+
   return (
     <AppBar
       position="sticky"
@@ -454,7 +459,7 @@ const Header = () => {
                   </Button>
                 </>
               )}
-              {}
+              {/* Removed empty {} here */}
               <Menu
                 id="user-menu"
                 anchorEl={userMenuAnchor}
@@ -523,4 +528,5 @@ const Header = () => {
     </AppBar>
   );
 };
+
 export default Header;

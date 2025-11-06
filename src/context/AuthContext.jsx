@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext(); 
 
-const AuthContext = createContext();
 
-const AuthProvider = ({ children, showSnackbar }) => {
+const AuthProvider = ({ children, showSnackbar}) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);

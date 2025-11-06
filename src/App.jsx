@@ -6,7 +6,7 @@ import Layout from './components/Layout';
 import professionalTheme from './theme/professionalTheme';
 import Login from './pages/Login';
 import RegistrationScreen from './pages/RegistrationScreen';
-import AuthProvider from './context/AuthContext';
+import AuthProvider from './context/AuthContext'; 
 import ProtectedRoute from './components/ProtectedRoute';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -27,6 +27,7 @@ function App() {
     setSnackbar({ open: true, message, severity });
   };
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
+
   return (
     <ThemeProvider theme={professionalTheme}>
       <CssBaseline />
@@ -35,12 +36,25 @@ function App() {
           <AuthProvider showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar}>
             <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>}>
               <Routes>
-                { }
+                {}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<RegistrationScreen />} />
-                { }
-                <Route path="/user/:id" element={<Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}><UserDetails /></Layout>} />
-                <Route path="/update-user/:id" element={<Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}><UpdateUser /></Layout>} />
+
+                {}
+                <Route path="/user/:id" element={
+                  <ProtectedRoute>
+                    <Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}>
+                      <UserDetails />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/update-user/:id" element={
+                  <ProtectedRoute>
+                    <Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}>
+                      <UpdateUser />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
                 <Route
                   path="/"
                   element={
@@ -130,4 +144,5 @@ function App() {
     </ThemeProvider>
   );
 }
+
 export default App;

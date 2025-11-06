@@ -4,7 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
 import BookIcon from '@mui/icons-material/Book';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 const HeroSection = () => (
   <Box
