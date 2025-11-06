@@ -17,8 +17,6 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff, LockOutlined } from "@mui/icons-material";
 import { useAuth } from '../context/AuthContext';
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
 
 const Login = () => {
     const [email, setEmail] = useState("");
