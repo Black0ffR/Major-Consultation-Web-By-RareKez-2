@@ -1,18 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+
 const AuthProvider = ({ children, showSnackbar }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('userData');
@@ -29,6 +23,7 @@ const AuthProvider = ({ children, showSnackbar }) => {
     }
     setLoading(false);
   }, []);
+
   const login = async (email, password) => {
     try {
       const response = await fetch('https://students-learning-api.onrender.com/api/auth/login', {
@@ -59,6 +54,7 @@ const AuthProvider = ({ children, showSnackbar }) => {
       return { success: false, error: error.message };
     }
   };
+
   const register = async (userData) => {
     try {
       const response = await fetch('https://students-learning-api.onrender.com/api/auth', {
@@ -85,6 +81,7 @@ const AuthProvider = ({ children, showSnackbar }) => {
       return { success: false, error: error.message };
     }
   };
+
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
@@ -94,6 +91,7 @@ const AuthProvider = ({ children, showSnackbar }) => {
       showSnackbar('Logged out successfully', 'success');
     }
   };
+
   const value = {
     user,
     loading,
@@ -102,10 +100,12 @@ const AuthProvider = ({ children, showSnackbar }) => {
     register,
     logout,
   };
+
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 export default AuthProvider;

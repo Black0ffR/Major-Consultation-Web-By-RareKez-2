@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { PersonAddOutlined } from "@mui/icons-material";
 import { useAuth } from '../context/AuthContext';
-import { motion } from "framer-motion";
+//import { motion } from "framer-motion";
 
 const RegistrationScreen = () => {
     const [formData, setFormData] = useState({
