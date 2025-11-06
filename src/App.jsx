@@ -8,7 +8,6 @@ import Login from './pages/Login';
 import RegistrationScreen from './pages/RegistrationScreen';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import UsersList from './pages/UsersList';
 
 const Home = lazy(() => import('./pages/Home'));
 const Insights = lazy(() => import('./pages/Insights'));
@@ -18,6 +17,9 @@ const Consulting = lazy(() => import('./pages/Consulting'));
 const Research = lazy(() => import('./pages/Research'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const UserDetails = lazy(() => import('./pages/ViewUser'));
+const UpdateUser = lazy(() => import('./pages/UpdateUser'));
+const UsersList = lazy(() => import('./pages/UsersList'));
 
 function App() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -33,10 +35,12 @@ function App() {
           <AuthProvider showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar}>
             <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>}>
               <Routes>
-                {}
+                { }
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<RegistrationScreen />} />
-                {}
+                { }
+                <Route path="/user/:id" element={<Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}><UserDetails /></Layout>} />
+                <Route path="/update-user/:id" element={<Layout showSnackbar={showSnackbar} handleCloseSnackbar={handleCloseSnackbar} snackbar={snackbar}><UpdateUser /></Layout>} />
                 <Route
                   path="/"
                   element={
