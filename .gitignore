@@ -13,6 +13,8 @@ dist-ssr
 *.local
 old-src
 new-src
+001
+9000
 
 # Editor directories and files
 .vscode/*
